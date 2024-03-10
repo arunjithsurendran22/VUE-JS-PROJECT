@@ -1,57 +1,59 @@
 <template>
-  <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-    <h1 class="text-center text-3xl font-bold mb-6">REGISTER</h1>
-    <form @submit.prevent="registerUser" class="space-y-4">
-      <div>
-        <input
-          type="text"
-          v-model="name"
-          placeholder="Name"
-          required
-          class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      <div>
-        <input
-          type="text"
-          v-model="mobile"
-          placeholder="Phone"
-          required
-          @input="validateMobile"
-          class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
-        />
-        <p v-if="mobileError" class="text-red-500">{{ mobileError }}</p>
-      </div>
-      <div>
-        <input
-          type="email"
-          v-model="email"
-          placeholder="Email"
-          required
-          @input="validateEmail"
-          class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
-        />
-        <p v-if="emailError" class="text-red-500">{{ emailError }}</p>
-      </div>
-      <div>
-        <input
-          type="password"
-          v-model="password"
-          placeholder="Password"
-          required
-          @input="validatePassword"
-          class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
-        />
-        <p v-if="passwordError" class="text-red-500">{{ passwordError }}</p>
-      </div>
-      <p v-if="error" class="text-red-500">{{ error }}</p>
-      <button
-        type="submit"
-        class="block w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700 transition-all duration-300"
-      >
-        REGISTER
-      </button>
-    </form>
+  <div class="bg-gray-400 h-screen">
+    <div class="max-w-md mx-auto  p-10 rounded-lg shadow-lg bg-white">
+      <h1 class="text-center text-3xl font-bold mb-6">REGISTER</h1>
+      <form @submit.prevent="registerUser" class="space-y-4 mt-72">
+        <div>
+          <input
+            type="text"
+            v-model="name"
+            placeholder="Name"
+            required
+            class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <input
+            type="text"
+            v-model="mobile"
+            placeholder="Phone"
+            required
+            @input="validateMobile"
+            class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
+          />
+          <p v-if="mobileError" class="text-red-500">{{ mobileError }}</p>
+        </div>
+        <div>
+          <input
+            type="email"
+            v-model="email"
+            placeholder="Email"
+            required
+            @input="validateEmail"
+            class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
+          />
+          <p v-if="emailError" class="text-red-500">{{ emailError }}</p>
+        </div>
+        <div>
+          <input
+            type="password"
+            v-model="password"
+            placeholder="Password"
+            required
+            @input="validatePassword"
+            class="block w-full px-4 py-2 rounded-md border focus:outline-none focus:border-blue-500"
+          />
+          <p v-if="passwordError" class="text-red-500">{{ passwordError }}</p>
+        </div>
+        <p v-if="error" class="text-red-500">{{ error }}</p>
+        <button
+          type="submit"
+          class="block w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700 transition-all duration-300"
+        >
+          REGISTER
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 

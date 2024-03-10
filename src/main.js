@@ -5,13 +5,31 @@ import Register from "./components/views/Register.vue";
 import Home from "./components/views/Home.vue";
 import "./style.css";
 import Login from "./components/views/Login.vue";
+import CityView from "./components/views/CityView.vue"
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/register", component: Register },
-    { path: "/home", component: Home },
-    { path: "/", component: Login },
+    {
+      path: "/register",
+      name: "Register",
+      component: Register,
+    },
+    {
+      path: "/home",
+      name: "home",
+      component: Home,
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
+    },
+    {
+      path: "/weather/:state/:city",
+      name: "CityView",
+      component: CityView,
+    },
   ],
 });
 
