@@ -13,7 +13,7 @@
         v-if="mapboxSearchResults"
       >
         <p v-if="searchError">Sorry something went wrong, please try again</p>
-        <p v-if="!searchError && mapboxSearchResults.length === 0">
+        <p v-else-if="mapboxSearchResults && mapboxSearchResults.length === 0">
           No results match your query, try a different term
         </p>
         <template v-else>
@@ -39,11 +39,13 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const previewCity = (searchResult) => {
-  const [Cityview, state] = searchResult.place_name.split(",");
-  const [city] = Cityview.split(",");
+  const [city, state] = searchResult.place_name.split(",");
+  console.log(city, state);
+  const trimmedState = state.replaceAll(" ","")
+
   router.push({
     name: "CityView",
-    params: { state: state.replaceAll(" ", ""), city: city },
+    params: { state: trimmedState, city: city },
     query: {
       lat: searchResult.geometry.coordinates[1],
       lng: searchResult.geometry.coordinates[0],
@@ -58,10 +60,11 @@ const mapBoxAPIKey =
 const searchQuery = ref("");
 const queryTimeout = ref(null);
 const mapboxSearchResults = ref(null);
-const searchError = ref(null);
+const searchError = ref(false); // Initialize error state to false
 
 const getSearchResults = () => {
   clearTimeout(queryTimeout.value);
+  searchError.value = false; // Reset error state
   queryTimeout.value = setTimeout(async () => {
     if (searchQuery.value !== "") {
       try {
@@ -74,10 +77,9 @@ const getSearchResults = () => {
         searchError.value = true;
         console.log(error);
       }
-
-      return;
+    } else {
+      mapboxSearchResults.value = null;
     }
-    mapboxSearchResults.value = null;
   }, 300);
 };
 </script>

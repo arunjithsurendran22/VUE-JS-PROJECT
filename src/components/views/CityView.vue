@@ -1,14 +1,12 @@
 <template>
-  <div>
-    <Suspense>
-      <AsyncCityView />
-      <template #fallback>
-        <p>Loading...</p>
-      </template>
-    </Suspense>
-  </div>
+  <Suspense>
+    <AsyncCityView />
+  </Suspense>
 </template>
 
 <script setup>
-import AsyncCityView from "../common/AsyncCityView.vue";
+import { defineAsyncComponent } from 'vue'
+
+const AsyncCityView = defineAsyncComponent(() => import('../common/AsyncCityView.vue'))
+
 </script>
