@@ -1,84 +1,95 @@
 <template>
-  <div class="flex flex-col flex-1 items-center">
+  <div class="flex flex-col flex-1 items-center bg-gray-900 text-white py-12">
     <!-- banner -->
 
     <!-- weather overview -->
-    <div v-if="weatherData" class="flex flex-col items-center text-white py-12">
-      <h1 class="text-xl md:text-4xl mb-2">{{ city }}, {{ state }}</h1>
-      <p class="text-sm mb-12">
+    <div v-if="weatherData" class="flex flex-col items-center">
+      <h1 class="text-3xl md:text-5xl font-semibold mb-4">
+        {{ weatherData.location.name }}, {{ weatherData.location.region }}
+      </h1>
+      <img
+        :src="weatherData.current.condition.icon"
+        alt="Weather Icon"
+        class="w-20 h-20"
+      />
+      <p class="text-sm mb-8">
         {{
-          new Date(weatherData.currentTime).toLocaleDateString("en-in", {
+          new Date(weatherData.current.last_updated).toLocaleDateString("en-IN", {
             weekday: "short",
             day: "2-digit",
             month: "long",
           })
         }}
         {{
-          new Date(weatherData.currentTime).toLocaleTimeString("en-in", {
+          new Date(weatherData.current.last_updated).toLocaleTimeString("en-IN", {
             timeStyle: "short",
           })
         }}
       </p>
-      <div class="text-center text-6xl">
-        <i :class="weatherData.weatherIconClass"></i>
-        <p class="text-7xl">{{ Math.round(weatherData.temp) }}°C</p>
+      <div class="text-center text-6xl mb-8">
+        <p class="text-7xl">{{ Math.round(weatherData.current.temp_c) }}°C</p>
       </div>
       <div
-        class="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-6 shadow-xl p-5 rounded-xl mt-10"
+        class="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-6 shadow-xl p-5 rounded-xl"
       >
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Min | Max</p>
-          <p>
-            {{ Math.round(weatherData.temp_min) }}°C ~
-            {{ Math.round(weatherData.temp_max) }}°C
-          </p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Wind Speed</p>
-          <p class="text-2xl">{{ Math.round(weatherData.windSpeed) }} km/h</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Visibility</p>
-          <p class="text-2xl">{{ Math.round(weatherData.visibility) }} km</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Air Pressure</p>
-          <p class="text-2xl">{{ weatherData.airPressurehpa }} hPa</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Weather Conditions</p>
-          <p class="text-2xl">{{ weatherData.weatherConditions }}</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Humidity</p>
-          <p class="text-2xl">{{ weatherData.humidity }}%</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Cloudiness</p>
-          <p class="text-2xl">{{ weatherData.cloudsPercentage }}%</p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Sunrise</p>
-          <p>
-            {{
-              new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString("en-in", {
-                timeStyle: "short",
-              })
-            }}
-          </p>
-        </div>
-        <div class="weather-info-item h-28">
-          <p class="font-semibold">Sunset</p>
-          <p>
-            {{
-              new Date(weatherData.sys.sunset * 1000).toLocaleTimeString("en-in", {
-                timeStyle: "short",
-              })
-            }}
-          </p>
-        </div>
+        <!-- Weather Info Items -->
       </div>
     </div>
+
+    <!-- Weather Forecast Table -->
+    <div v-if="weatherDataTen" class="mt-10">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-800">
+          <thead class="bg-gray-800">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+              >
+                Date
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+              >
+                Day
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+              >
+                weather
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+              >
+                Min/Max Temp (°C)
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-900 divide-y divide-gray-800">
+            <tr
+              v-for="dayData in weatherDataTen.forecast.forecastday"
+              :key="dayData.date"
+            >
+              <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(dayData.date) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ getDayOfWeek(dayData.date) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <img
+                  :src="dayData.day.condition.icon"
+                  alt="Weather Icon"
+                  class="w-8 h-8"
+                />
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ Math.round(dayData.day.mintemp_c) }}°C ~
+                {{ Math.round(dayData.day.maxtemp_c) }}°C
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div v-else>
       <p>Loading weather data...</p>
     </div>
@@ -94,123 +105,47 @@ const city = route.params.city;
 const state = route.params.state;
 const lat = route.query.lat;
 const lng = route.query.lng;
-
-const APIkey = "f7070cf0287e9970cb9badfa61ff43ec";
-const getWeatherData = async (lat, lng, APIkey) => {
+const day = 10;
+const APIkey = "fc0f79a144e9415ca3f70223241003";
+const getWeatherData = async (city, APIkey) => {
   try {
     const response = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${APIkey}`
+      `http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}&aqi=no`
     );
-    const data = response.data;
-
-    // Convert temperature to Celsius
-    const tempCelsius = data.main.temp - 273.15;
-    const tempMaxCelsius = data.main.temp_max - 273.15;
-    const tempMinCelsius = data.main.temp_min - 273.15;
-    // Convert wind speed to km/h
-    const windSpeedKmh = data.wind.speed * 3.6;
-    // Convert visibility to km
-    const visibilityKm = data.visibility / 1000;
-    const airPressure = data.main.pressure;
-    const weathers = data.weather[0];
-    const weatherCondition = weathers.main;
-    const humidityData = data.clouds;
-    const cloud = humidityData.all;
-
-    // Add converted values to the data object
-    data.temp = tempCelsius;
-    data.windSpeed = windSpeedKmh;
-    data.visibility = visibilityKm;
-    data.temp_max = tempMaxCelsius;
-    data.temp_min = tempMinCelsius;
-    data.airPressurehpa = airPressure;
-    data.weatherConditions = weatherCondition;
-    data.humidity = data.main.humidity;
-    data.cloudsPercentage = cloud;
-
-    // Calculate current date and time
-    const localOffset = new Date().getTimezoneOffset() * 60000;
-    const utc = data.dt * 1000 + localOffset;
-    data.currentTime = utc + 1000 * data.timezone;
-
-    // Determine weather icon class based on weather conditions
-    const iconCode = weathers.icon;
-    data.weatherIconClass = getWeatherIconClass(iconCode);
-
-    return data;
+    return response.data;
   } catch (error) {
     console.log(error);
   }
 };
-
-const getWeatherDataMonth = async (lat, lng, APIkey) => {
+const getTenDaysData = async (city, day, APIkey) => {
   try {
-    console.log(lat);
-    console.log(lng);
-    const response = axios.get(
-      `https://pro.openweathermap.org/data/2.5/forecast/climate?lat=${lat}&lon=${lng}&appid=${APIkey}`
+    const response = await axios.get(
+      `http://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=${day}&aqi=no&alerts=no`
     );
-    const monthlyWeather = response.data;
-    console.log("monthlyWeather", monthlyWeather);
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     console.log(error);
   }
 };
 
-// Function to get weather icon class based on weather conditions and time of day
-const getWeatherIconClass = (iconCode, currentTime) => {
-  // Implement your logic to map icon code to appropriate class
-  // Example logic:
-  if (iconCode.includes("01")) {
-    // Clear sky
-    return isDaytime(currentTime) ? "fas fa-sun" : "fas fa-moon";
-  } else if (iconCode.includes("02")) {
-    // Few clouds
-    return isDaytime(currentTime) ? "fas fa-cloud-sun" : "fas fa-cloud-moon";
-  } else if (iconCode.includes("03")) {
-    // Scattered clouds
-    return isDaytime(currentTime) ? "fas fa-cloud" : "fas fa-cloud-moon";
-  } else if (iconCode.includes("04")) {
-    // Broken clouds
-    return isDaytime(currentTime) ? "fas fa-cloud" : "fas fa-cloud-moon";
-  } else if (iconCode.includes("09")) {
-    // Shower rain
-    return "fas fa-cloud-showers-heavy";
-  } else if (iconCode.includes("10")) {
-    // Rain
-    return "fas fa-cloud-rain";
-  } else if (iconCode.includes("11")) {
-    // Thunderstorm
-    return "fas fa-bolt";
-  } else if (iconCode.includes("13")) {
-    // Snow
-    return "fas fa-snowflake";
-  } else if (iconCode.includes("50")) {
-    // Mist
-    return "fas fa-smog";
-  } else {
-    return "fas fa-question"; // Default icon
-  }
+const weatherData = await getWeatherData(city, APIkey);
+const weatherDataTen = await getTenDaysData(city, day, APIkey);
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 };
 
-// Function to check if it's daytime or nighttime based on current time
-const isDaytime = (currentTime) => {
-  const currentHour = new Date(currentTime).getHours();
-  return currentHour >= 6 && currentHour < 18; // Assuming daytime is from 6 AM to 6 PM
+const getDayOfWeek = (dateString) => {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getDay()];
 };
-
-const weatherData = await getWeatherData(lat, lng, APIkey);
-const monthlyWeatherData = await getWeatherDataMonth(lat, lng, APIkey);
 </script>
 
-<style scoped>
-.weather-info-item {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  text-align: center;
-}
-.weather-info-item p {
-  margin: 0.5rem 0;
-}
-</style>
+<style scoped></style>
