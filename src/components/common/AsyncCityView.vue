@@ -4,6 +4,7 @@
 
     <!-- weather overview -->
     <div v-if="weatherData" class="flex flex-col items-center">
+      <!-- Location and Icon -->
       <h1 class="text-3xl md:text-5xl font-semibold mb-4">
         {{ weatherData.location.name }}, {{ weatherData.location.region }}
       </h1>
@@ -12,27 +13,50 @@
         alt="Weather Icon"
         class="w-20 h-20"
       />
+
+      <!-- Last Updated Time -->
       <p class="text-sm mb-8">
+        Updated:
         {{
-          new Date(weatherData.current.last_updated).toLocaleDateString("en-IN", {
-            weekday: "short",
-            day: "2-digit",
-            month: "long",
-          })
-        }}
-        {{
-          new Date(weatherData.current.last_updated).toLocaleTimeString("en-IN", {
-            timeStyle: "short",
+          new Date(weatherData.current.last_updated).toLocaleString("en-IN", {
+            hour: "numeric",
+            minute: "numeric",
           })
         }}
       </p>
+
+      <!-- Temperature and Condition -->
       <div class="text-center text-6xl mb-8">
         <p class="text-7xl">{{ Math.round(weatherData.current.temp_c) }}°C</p>
+        <p class="text-2xl mt-5">{{ weatherData.current.condition.text }}</p>
       </div>
-      <div
-        class="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-6 shadow-xl p-5 rounded-xl"
-      >
-        <!-- Weather Info Items -->
+
+      <!-- Additional Weather Information -->
+      <div class="grid grid-cols-3 gap-4 text-center w-full max-w-lg p-10 rounded-xl bg-gray-800 shadow-md">
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">Wind Speed</p>
+          <p class="text-xl">{{ weatherData.current.wind_kph }} km/h</p>
+        </div>
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">Humidity</p>
+          <p class="text-xl">{{ weatherData.current.humidity }}%</p>
+        </div>
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">Visibility</p>
+          <p class="text-xl">{{ weatherData.current.vis_km }} km</p>
+        </div>
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">Cloudiness</p>
+          <p class="text-xl">{{ weatherData.current.cloud }}%</p>
+        </div>
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">Air Pressure</p>
+          <p class="text-xl">{{ weatherData.current.pressure_mb }} hpa</p>
+        </div>
+        <div class="text-gray-400">
+          <p class="text-sm italic font-semibold">UV</p>
+          <p class="text-xl">{{ weatherData.current.uv }}</p>
+        </div>
       </div>
     </div>
 
@@ -55,7 +79,7 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
               >
-                weather
+                Weather
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
@@ -107,11 +131,17 @@ const lat = route.query.lat;
 const lng = route.query.lng;
 const day = 10;
 const APIkey = "fc0f79a144e9415ca3f70223241003";
+
+console.log(city);
+const cityData =city.split(" ")
+const newCity =cityData[0]
 const getWeatherData = async (city, APIkey) => {
   try {
+    console.log(city);
     const response = await axios.get(
       `http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}&aqi=no`
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -122,15 +152,14 @@ const getTenDaysData = async (city, day, APIkey) => {
     const response = await axios.get(
       `http://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=${day}&aqi=no&alerts=no`
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 };
 
-const weatherData = await getWeatherData(city, APIkey);
-const weatherDataTen = await getTenDaysData(city, day, APIkey);
+const weatherData = await getWeatherData(newCity, APIkey);
+const weatherDataTen = await getTenDaysData(newCity, day, APIkey);
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -148,4 +177,6 @@ const getDayOfWeek = (dateString) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Add custom styles here */
+</style>
